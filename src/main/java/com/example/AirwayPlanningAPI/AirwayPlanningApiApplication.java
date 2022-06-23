@@ -12,14 +12,18 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.Collections;
 
 @SpringBootApplication
-public class AirwayPlanningApiApplication {
+public class AirwayPlanningApiApplication
+{
 
-	public static void main(String[] args) {
-		SpringApplication.run(AirwayPlanningApiApplication.class, args);
-	}
+    public static void main(String[] args)
+    {
+        SpringApplication.run(AirwayPlanningApiApplication.class, args);
+    }
+
     // Fix the CORS errors
     @Bean
-    public FilterRegistrationBean simpleCorsFilter() {
+    public FilterRegistrationBean simpleCorsFilter()
+    {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);

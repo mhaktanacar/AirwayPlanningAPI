@@ -1,4 +1,4 @@
-package com.example.AirwayPlanningAPI.repository;
+package com.example.AirwayPlanningAPI.repository.flight;
 
 import com.example.AirwayPlanningAPI.entity.Flight;
 import org.springframework.stereotype.Repository;
@@ -53,6 +53,20 @@ public class CustomFlightRepositoryImpl implements CustomFlightRepository
         Query query = entityManager.createNativeQuery("SELECT * FROM flight as fl " +
                 "WHERE fl.FLIGHT_DATE = :date  ", Flight.class);
         query.setParameter("date", date);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Flight> checkThatDaysFlightCount(Date date, long sourceAirportId, long destAirportId, long airlineId)
+    {
+        Query query = entityManager.createNativeQuery("SELECT * FROM flight as fl " +
+                "WHERE fl.FLIGHT_DATE = :date  " +
+                "AND ((SOURCE_AIRPORT_ID = :sourceAirportId OR DEST_AIRPORT_ID = :sourceAirportId) AND (SOURCE_AIRPORT_ID = :destAirportId OR DEST_AIRPORT_ID = :destAirportId))" +
+                "AND AIRLINE_ID = :airlineId", Flight.class);
+        query.setParameter("date", date);
+        query.setParameter("sourceAirportId", sourceAirportId);
+        query.setParameter("destAirportId", destAirportId);
+        query.setParameter("airlineId", airlineId);
         return query.getResultList();
     }
 }

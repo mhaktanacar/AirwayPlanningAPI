@@ -52,6 +52,4 @@ public class Flight
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "DEST_AIRPORT_ID")
     private Airport destAirport;
-
-
 }

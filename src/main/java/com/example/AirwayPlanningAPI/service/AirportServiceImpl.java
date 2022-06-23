@@ -17,27 +17,14 @@ public class AirportServiceImpl implements AirportService
     private AirportRepository airportRepository;
 
     @Override
-    public Airport saveAirport(Airport airport)
-    {
-        return airportRepository.save(airport);
-    }
-
-    @Override
     public List<Airport> fetchAirportList()
     {
         return (List<Airport>) airportRepository.findAll();
     }
 
     @Override
-    public Airport updateAirport(Airport airport, Long airportId)
+    public Airport findAirportByAirportCode(String airportCode)
     {
-        return null;
+        return airportRepository.findAirportByAirportCode(airportCode);
     }
-
-    @Override
-    public void deleteAirportById(Long airportId)
-    {
-        airportRepository.deleteById(airportId);
-    }
-
 }

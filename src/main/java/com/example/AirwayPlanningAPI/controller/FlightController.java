@@ -1,6 +1,10 @@
 package com.example.AirwayPlanningAPI.controller;
 
+import com.example.AirwayPlanningAPI.dto.FlightDto;
 import com.example.AirwayPlanningAPI.entity.Flight;
+import com.example.AirwayPlanningAPI.mapper.FlightMapper;
+import com.example.AirwayPlanningAPI.service.AirlineService;
+import com.example.AirwayPlanningAPI.service.AirportService;
 import com.example.AirwayPlanningAPI.service.FlightService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by MHAKTANACAR on 19.06.2022
@@ -22,43 +27,68 @@ public class FlightController
     @Autowired
     private FlightService flightService;
 
+    @Autowired
+    private AirportService airportService;
+
+    @Autowired
+    private AirlineService airlineService;
+
+    @Autowired
+    private FlightMapper flightMapper;
+
     @PostMapping("/flights")
-    public Flight saveFlight(@RequestBody Flight flight)
+    public Flight saveFlight(@RequestBody FlightDto flightDto)
     {
+        Flight flight = flightMapper.toEntity(flightDto);
         return flightService.saveFlight(flight);
     }
 
     @GetMapping("/flights")
-    public List<Flight> fetchFlightList()
+    public List<FlightDto> fetchFlightList()
     {
-        return flightService.fetchFlightList();
+        return flightService.fetchFlightList()
+                .stream()
+                .map(flight -> flightMapper.toDto(flight))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/todaysFlights")
-    public List<Flight> findTodaysFlight()
+    public List<FlightDto> findTodaysFlight()
     {
-        return flightService.findTodaysFlight();
+        return flightService.findTodaysFlight()
+                .stream()
+                .map(flight -> flightMapper.toDto(flight))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/flights/date/{date}")
-    public List<Flight> findTodaysFlight(@PathVariable("date")
-                                                 Date date)
+    public List<FlightDto> findTodaysFlight(@PathVariable("date")
+                                                    Date date)
     {
-        return flightService.getFlightsByDate(date);
+        return flightService.getFlightsByDate(date)
+                .stream()
+                .map(flight -> flightMapper.toDto(flight))
+                .collect(Collectors.toList());
     }
 
-    @GetMapping("/flights/airline/{airlineId}")
-    public List<Flight> getFlightByAirlineId(@PathVariable("airlineId")
-                                                     Long airlineId)
+    @GetMapping("/flights/airline/{airlineCode}")
+    public List<FlightDto> getFlightsByAirlineCode(@PathVariable("airlineCode")
+                                                           String airlineCode)
     {
-        return flightService.getFlightByAirlineId(airlineId);
+        return flightService.getFlightByAirlineId(airlineService.findAirlineByAirlineCode(airlineCode).getId())
+                .stream()
+                .map(flight -> flightMapper.toDto(flight))
+                .collect(Collectors.toList());
     }
 
-    @GetMapping("/flights/airport/{airportId}")
-    public List<Flight> getFlightByAirportId(@PathVariable("airportId")
-                                                     Long airportId)
+    @GetMapping("/flights/airport/{airportCode}")
+    public List<FlightDto> getFlightByAirportCode(@PathVariable("airportCode")
+                                                          String airportCode)
     {
-        return flightService.getFlightByAirportId(airportId);
+        return flightService.getFlightByAirportId(airportService.findAirportByAirportCode(airportCode).getId())
+                .stream()
+                .map(flight -> flightMapper.toDto(flight))
+                .collect(Collectors.toList());
     }
 
     @DeleteMapping("/flights/{id}")

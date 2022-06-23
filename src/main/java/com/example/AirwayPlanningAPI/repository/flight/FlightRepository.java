@@ -1,4 +1,4 @@
-package com.example.AirwayPlanningAPI.repository;
+package com.example.AirwayPlanningAPI.repository.flight;
 
 import com.example.AirwayPlanningAPI.entity.Flight;
 import org.springframework.data.jpa.repository.JpaRepository;

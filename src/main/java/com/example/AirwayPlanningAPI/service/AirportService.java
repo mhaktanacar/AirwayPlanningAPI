@@ -9,11 +9,7 @@ import java.util.List;
  */
 public interface AirportService
 {
-    Airport saveAirport(Airport airport);
-
     List<Airport> fetchAirportList();
 
-    Airport updateAirport(Airport department, Long airportId);
-
-    void deleteAirportById(Long airportId);
+    Airport findAirportByAirportCode(String airportCode);
 }

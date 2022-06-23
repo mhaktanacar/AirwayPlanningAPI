@@ -1,4 +1,4 @@
-package com.example.AirwayPlanningAPI.repository;
+package com.example.AirwayPlanningAPI.repository.flight;
 
 import com.example.AirwayPlanningAPI.entity.Flight;
 
@@ -17,4 +17,6 @@ public interface CustomFlightRepository
     List<Flight> getFlightByAirportId(long airportId);
 
     List<Flight> getFlightsByDate(Date date);
+
+    List<Flight> checkThatDaysFlightCount(Date date, long sourceAirportId, long destAirportId, long airlineId);
 }

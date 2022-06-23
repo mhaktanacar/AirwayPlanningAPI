@@ -4,11 +4,10 @@ import com.example.AirwayPlanningAPI.constants.Constants;
 import com.example.AirwayPlanningAPI.entity.Flight;
 import com.example.AirwayPlanningAPI.exception.FlightRestrictionException;
 import com.example.AirwayPlanningAPI.exception.SourceDestinationErrorException;
-import com.example.AirwayPlanningAPI.repository.FlightRepository;
+import com.example.AirwayPlanningAPI.repository.flight.FlightRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,33 +23,12 @@ public class FlightServiceImpl implements FlightService
     @Override
     public Flight saveFlight(Flight flight)
     {
-        try
-        {
-            List<Flight> flightList = (List<Flight>) flightRepository.getFlightsByDate(flight.getFlightDate());
-            String newSourceDest = prepareSourceDestString(flight);
-            List<String> sourceDestList = new ArrayList<>();
-
-            int count = 0;
-            count = getCount(flightList, newSourceDest, sourceDestList, count);
-            if (count >= 3)
-            {
-                throw new FlightRestrictionException(Constants.FLIGHT_RESTRICTION);
-            }
-
-            if (flight.getSourceAirport().getId() == flight.getDestAirport().getId())
-            {
-                throw new SourceDestinationErrorException(Constants.SOURCE_DEST_ERROR);
-            }
-
-            flight.setAirline(flight.getAirline());
-            flight.setSourceAirport(flight.getSourceAirport());
-            flight.setDestAirport(flight.getDestAirport());
-            return flightRepository.save(flight);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
+        checkSourceAndDestAirports(flight);
+        checkAvailableFlightAndGetCount(flight);
+        flight.setAirline(flight.getAirline());
+        flight.setSourceAirport(flight.getSourceAirport());
+        flight.setDestAirport(flight.getDestAirport());
+        return flightRepository.save(flight);
     }
 
     @Override
@@ -89,42 +67,22 @@ public class FlightServiceImpl implements FlightService
         return flightRepository.getFlightsByDate(date);
     }
 
-    private int getCount(List<Flight> flightList, String newSourceDest, List<String> sourceDestList, int count)
+    private void checkAvailableFlightAndGetCount(Flight flight)
     {
-        for (Flight flights : flightList)
+        if ((flightRepository.checkThatDaysFlightCount(flight.getFlightDate()
+                , flight.getSourceAirport().getId()
+                , flight.getDestAirport().getId()
+                , flight.getAirline().getId()).size() >= 3))
         {
-            sourceDestList.add(prepareSourceDestString(flights));
+            throw new FlightRestrictionException(Constants.FLIGHT_RESTRICTION);
         }
-        for (int i = 0; i < sourceDestList.size(); i++)
-        {
-            if (newSourceDest.equals(sourceDestList.get(i)))
-            {
-                count++;
-            }
-        }
-        return count;
     }
 
-    private String prepareSourceDestString(Flight flights)
+    private void checkSourceAndDestAirports(Flight flight)
     {
-        if (flights.getSourceAirport().getId() > flights.getDestAirport().getId())
+        if (flight.getSourceAirport().getId() == flight.getDestAirport().getId())
         {
-            return Long.toString(flights.getAirline().getId())
-                    .concat(Long.toString(flights.getDestAirport().getId())
-                            .concat(Long.toString(flights.getSourceAirport().getId())));
+            throw new SourceDestinationErrorException(Constants.SOURCE_DEST_ERROR);
         }
-        else if (flights.getSourceAirport().getId() < flights.getDestAirport().getId())
-        {
-            return Long.toString(flights.getAirline().getId())
-                    .concat(Long.toString(flights.getSourceAirport().getId())
-                            .concat(Long.toString(flights.getDestAirport().getId())));
-        }
-        else if (flights.getSourceAirport().getId() == flights.getDestAirport().getId())
-        {
-            return Long.toString(flights.getAirline().getId())
-                    .concat(Long.toString(flights.getSourceAirport().getId())
-                            .concat(Long.toString(flights.getDestAirport().getId())));
-        }
-        else return null;
     }
 }

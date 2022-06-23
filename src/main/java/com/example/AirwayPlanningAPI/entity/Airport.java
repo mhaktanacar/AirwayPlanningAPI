@@ -46,6 +46,5 @@ public class Airport
     @OneToMany(mappedBy = "destAirport", fetch = FetchType.EAGER,
             cascade = CascadeType.ALL)
     private List<Flight> destFlightList;
-
 }
 

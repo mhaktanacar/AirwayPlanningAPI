@@ -17,26 +17,14 @@ public class AirlineServiceImpl implements AirlineService
     private AirlineRepository airlineRepository;
 
     @Override
-    public Airline saveAirline(Airline airline)
-    {
-        return airlineRepository.save(airline);
-    }
-
-    @Override
     public List<Airline> fetchAirlineList()
     {
         return (List<Airline>) airlineRepository.findAll();
     }
 
     @Override
-    public Airline updateAirline(Airline airline, Long airlineId)
+    public Airline findAirlineByAirlineCode(String airlineCode)
     {
-        return null;
-    }
-
-    @Override
-    public void deleteAirlineById(Long airlineId)
-    {
-        airlineRepository.deleteById(airlineId);
+        return airlineRepository.findAirlineByAirlineCode(airlineCode);
     }
 }

@@ -9,11 +9,7 @@ import java.util.List;
  */
 public interface AirlineService
 {
-    Airline saveAirline(Airline airline);
-
     List<Airline> fetchAirlineList();
 
-    Airline updateAirline(Airline airline, Long airlineId);
-
-    void deleteAirlineById(Long airlineId);
+    Airline findAirlineByAirlineCode(String airlineCode);
 }
